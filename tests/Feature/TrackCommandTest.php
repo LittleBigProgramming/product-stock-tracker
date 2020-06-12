@@ -23,35 +23,20 @@ class TrackCommandTest extends TestCase
     {
         // Given
         // A product with a stock
-        $switch = Product::create(['name' => 'Nintendo Switch']);
-        $amazon = Retailer::create(['name' => 'Amazon']);
-
-        $this->assertFalse($switch->inStock());
-
-        $stock = new Stock([
-            'price' => 10000,
-            'url' => 'http://foo.com',
-            'sku' => '12345',
-            'in_stock' => false
-        ]);
-
-        $amazon->addStock($switch, $stock);
-        $this->assertFalse($stock->fresh()->in_stock);
-
-
+        $this->seed(\RetailerWithProductSeeder::class);
+        $this->assertFalse(Product::first()->inStock());
         // When
         // The php artisan track command is triggered, assuming the stock is now available
-        Http::fake(function () {
-            return [
+        Http::fake(fn() => [
                 'available' => 'true',
                 'price' => 25000
-            ];
-        });
+        ]);
 
-        $this->artisan('track');
+        $this->artisan('track')
+            ->expectsOutput(('Product Stock Tracking command run successfully!'));
 
         // Then
         // The stock details for the product should be refreshed
-        $this->assertTrue($stock->fresh()->in_stock);
+        $this->assertFalse(Product::first()->inStock());
     }
 }

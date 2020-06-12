@@ -39,5 +39,7 @@ class TrackCommand extends Command
     public function handle()
     {
         Product::all()->each->track();
+
+        $this->info('Product Stock Tracking command run successfully!');
     }
 }
