@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Facades\App\Clients\ClientFactory;
+
 class Retailer extends Model
 {
     protected $fillable = ['name'];
@@ -15,5 +17,10 @@ class Retailer extends Model
     public function stock()
     {
         return $this->hasMany(Stock::class);
+    }
+
+    public function client()
+    {
+        return ClientFactory::make($this);
     }
 }
