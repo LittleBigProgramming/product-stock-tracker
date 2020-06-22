@@ -3,7 +3,6 @@
 namespace Tests\Unit;
 
 
-use App\Clients\Client;
 use App\Clients\ClientException;
 use Facades\App\Clients\ClientFactory;
 use App\Clients\StockCheckResponse;
@@ -33,9 +32,9 @@ class StockTest extends TestCase
         $this->seed(\RetailerWithProductSeeder::class);
         // Uses client factory to determine the appropriate client
         // And runs checkAvailablity
-        ClientFactory::shouldReceive('make')->andReturn(new FakeClient);
-
-
+        ClientFactory::shouldReceive('make->checkAvailability')->andReturn(
+            new StockCheckResponse($available = true, $price = 5000)
+        );
 
         $stock = tap(Stock::first())->track();
 
@@ -44,10 +43,3 @@ class StockTest extends TestCase
     }
 }
 
-class FakeClient implements Client
-{
-    public function checkAvailability(Stock $stock): StockCheckResponse
-    {
-        return new StockCheckResponse($available = true, $price = 5000);
-    }
-}
